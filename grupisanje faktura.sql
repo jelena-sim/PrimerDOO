@@ -1,3 +1,14 @@
+--16. Kao menadzer prodaje zelim da imam izvestaj koji obuhvata sve fakture i koji prikazuje 
+--ukupnu vrednost faktura i ukupnu vrednost obracunatih poena grupisanih po:
+--a. Mesecu
+--b. Gradu
+--c. Zaposlenom koji je uneo fakturu
+--d. Klijentu
+--19. Kao menadzer marketinga zelim da imam izvestaj koji obuhvata sve i koji prikazuje 
+--ukupnu vrednost faktura i ukupnu vrednost poena grupisanih po:
+--a. Mesecu
+--c. Gradu
+
 IF OBJECT_ID('grupisano_po_mesecu') IS NOT NULL
 	DROP PROCEDURE grupisano_po_mesecu
 GO

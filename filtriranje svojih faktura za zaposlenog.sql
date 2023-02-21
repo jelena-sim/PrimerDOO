@@ -1,3 +1,9 @@
+--11. Kao zaposleni u prodaji zelim da listu svojih fakture filtriram po:
+--a. Klijentu
+--b. Gradu
+--c. Periodu unosenja fakture
+--d. Prodajnom objektu
+
 IF OBJECT_ID('filter_po_klijentu') IS NOT NULL
 	DROP PROCEDURE filter_po_klijentu
 GO

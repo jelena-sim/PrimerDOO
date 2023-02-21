@@ -1,3 +1,12 @@
+--15. Kao menadzer prodaje zelim da imam mogucnost da filtriram fakture po:
+--a. Klijentu
+--b. Gradu
+--c. Periodu unosa fakture
+--18. Kao menadzer marketinga fakture zelim da imam mogucnost da filtriram fakture po:
+--a. Artiklu
+--b. Periodu unosa fakture
+--c. Gradu
+
 IF OBJECT_ID('filter_svih_po_klijentu') IS NOT NULL
 	DROP PROCEDURE filter_svih_po_klijentu
 GO

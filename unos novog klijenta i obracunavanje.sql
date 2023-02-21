@@ -1,3 +1,5 @@
+--7. Kao zaposleni u prodaji zelim da imam mogucnost da unesem novog clana kluba u sistem.
+
 IF OBJECT_ID('unos_klijenta') IS NOT NULL
 	DROP PROCEDURE unos_klijenta
 GO
@@ -19,6 +21,9 @@ INSERT INTO [dbo].[klijent]
 		   ,0)
 GO
 
+--8. Kao zaposleni u prodaji zelim da imam mogucnost da azuriram adresne podatke za 
+--klijenta u sistemu.
+
 IF OBJECT_ID('azuriranje_adrese') IS NOT NULL
 	DROP PROCEDURE azuriranje_adrese
 GO
@@ -28,6 +33,10 @@ UPDATE dbo.klijent
 SET dbo.klijent.adresa=@adresa
 WHERE dbo.klijent.id=@id
 GO
+
+--9. Kao zaposleni u prodaji, zelim da ukoliko je klijent na fakturi utrosio potreban broj poena 
+--kako bi ostvario popust, umanjim stanje poena na racunu klijenta. Faktura na kojoj je 
+--korisnik ostvario popust, takodje se boduje za procentualno umanjeni iznos svakog artikla.
 
 IF OBJECT_ID('obracun_popusta') IS NOT NULL
 	DROP PROCEDURE obracun_popusta
@@ -44,12 +53,18 @@ DECLARE @poeni_sa_fakture INT;
 SET @poeni_sa_fakture=(SELECT f.poeni FROM dbo.faktura f WHERE f.id=@idFakture);
 DECLARE @procenat FLOAT;
 SET @procenat=(SELECT p.procenat FROM dbo.popusti p);
-IF @stanje>@poeni_za_popust
+IF @stanje>=@poeni_za_popust
 BEGIN 
 UPDATE dbo.klijent
 SET dbo.klijent.stanje=@stanje-@poeni_za_popust
 WHERE dbo.klijent.id=@idKlijenta;
 UPDATE dbo.faktura
 SET dbo.faktura.iznos_sa_popustom=dbo.faktura.iznos*(1-0.01*@procenat)
+WHERE dbo.faktura.id=@idFakture
+END
+ELSE
+BEGIN
+UPDATE dbo.faktura
+SET dbo.faktura.iznos_sa_popustom=dbo.faktura.iznos
 WHERE dbo.faktura.id=@idFakture
 END

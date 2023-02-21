@@ -1,10 +1,14 @@
+--1. Kao zaposleni u prodaji, zelim da imam mogucnost da unesem novu fakturu clana kluba 
+--u sistem, kako bi se obracunali poeni.
+--Nakon toga se popunjava vezna tabela artikalUFakturi, jer se pretpostavlja da jedna faktura moze imati vise artikala.
+
 IF OBJECT_ID('unos_fakture') IS NOT NULL
 	DROP PROCEDURE unos_fakture
 GO
 IF OBJECT_ID('unos_artikla_u_fakturu') IS NOT NULL
 	DROP PROCEDURE unos_artikla_u_fakturu
 GO
-CREATE PROCEDURE unos_fakture @id INT, @idKlijenta INT,	@idZaposlenog INT, @datum DATE, @idPromocije INT,
+CREATE PROCEDURE unos_fakture @id INT, @idKlijenta INT,	@idZaposlenog INT, @datum DATE,
 							  @prodajniObjekat NVARCHAR(20), @grad NVARCHAR(10)
 AS
 INSERT INTO [dbo].[faktura]
@@ -25,7 +29,7 @@ INSERT INTO [dbo].[faktura]
            ,@idZaposlenog
            ,@datum
            ,NULL
-           ,@idPromocije
+           ,NULL
            ,@prodajniObjekat
            ,@grad
            ,0
@@ -44,6 +48,9 @@ INSERT INTO [dbo].[artikalUFakturi]
            ,@idArtikla
            ,@idFakture)
 GO
+
+--2. Kao zaposleni u prodaji, zelim da imam mogucnost da izmenim unetu kupovinu u sistem 
+--kako bih bio/la u mogucnosti da intervenisem na postojecoj fakturi.
 
 IF OBJECT_ID('izmena_fakture') IS NOT NULL
 	DROP PROCEDURE izmena_fakture
@@ -65,6 +72,9 @@ UPDATE [dbo].[faktura]
  WHERE [id] = @id
  GO
 
+--3. Kao zaposleni u prodaji, prilikom unosenja nove fakture, zelim da mi sistem obracuna
+--poene po svakom artiklu u fakturi prema definisanim vrednostima za svaki artikal.
+
 IF OBJECT_ID('obracun_poena') IS NOT NULL
 	DROP PROCEDURE obracun_poena
 GO
@@ -82,6 +92,9 @@ SET dbo.faktura.poeni=(SELECT poeni FROM obracunaj_p)
 WHERE dbo.faktura.id=@IDfakture
 GO
 
+--4. Kao zaposleni u prodaji, prilikom unosenja nove fakture, zelim da mi sistem automatski 
+--doda bonus poene prema aktivnoj promociji u datom periodu.
+
 IF OBJECT_ID('obracun_bonus_poena') IS NOT NULL
 	DROP PROCEDURE obracun_bonus_poena
 GO
@@ -95,10 +108,16 @@ DECLARE @poeni INT;
 SET @poeni=(SELECT f.poeni FROM dbo.faktura f WHERE f.id=@IDfakture);
 DECLARE @bonus_poeni INT;
 SET @bonus_poeni=(SELECT p.bonus FROM dbo.promocija p WHERE p.id=@IDpromocije);
+IF @IDpromocije IS NOT NULL
+BEGIN
 UPDATE dbo.faktura
-SET dbo.faktura.poeni=@poeni + @bonus_poeni
+SET dbo.faktura.poeni=@poeni + @bonus_poeni, dbo.faktura.idPromocije=@IDpromocije
 WHERE dbo.faktura.id=@IDfakture
+END
 GO
+
+--5. Kao zaposleni u prodaji, zelim mogucnost da unetu fakturu, za koju su obracunati poeni, 
+--postavim u status "nagradjena".
 
 IF OBJECT_ID('postavi_status') IS NOT NULL
 	DROP PROCEDURE postavi_status
@@ -110,6 +129,8 @@ SET dbo.faktura.status='nagradjena'
 WHERE dbo.faktura.id=@IDfakture AND dbo.faktura.poeni>0
 GO
 
+--6. Kao zaposleni u prodaji, zelim da se obracunati poeni sa fakture dodaju na stanje racuna
+--klijenta.
 IF OBJECT_ID('dodaj_na_stanje') IS NOT NULL
 	DROP PROCEDURE dodaj_na_stanje
 GO
@@ -125,6 +146,8 @@ UPDATE dbo.klijent
 SET dbo.klijent.stanje=@stanje+@poeni
 WHERE dbo.klijent.id=@idKlijenta
 GO
+
+--Ukupna vrednost fakture.
 
 IF OBJECT_ID('obracun_cena') IS NOT NULL
 	DROP PROCEDURE obracun_cena
