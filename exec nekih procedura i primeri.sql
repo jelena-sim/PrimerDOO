@@ -18,15 +18,6 @@ exec grupisano_po_gradu
 exec unos_klijenta @id=5, @ime=Jelena,	@prezime=Maric, @adresa='Nikole Tesle 54', @grad='Beograd'
 exec azuriranje_adrese @id=3, @adresa='Tosin Bunar 15'
 
-
 select * from dbo.faktura
 select * from dbo.klijent
 select * from dbo.artikalUFakturi
-
-delete from dbo.artikalUFakturi
-delete from dbo.faktura
-delete from dbo.artikal
-delete from dbo.zaposleni
-delete from dbo.popusti
-delete from dbo.promocija
-delete from dbo.klijent
