@@ -13,6 +13,9 @@ exec unos_fakture @id=7, @idKlijenta=3,	@idZaposlenog=2, @datum='2022-01-20', @p
 exec unos_artikla_u_fakturu @id=15, @idArtikla=4, @idFakture=7
 exec obracun_nakon_unosa @id=7
 
+exec obracun_poena @idfakture=6
+exec obracun_poena
+
 select * from uvid_u_fakture
 exec grupisano_po_gradu
 exec unos_klijenta @id=5, @ime=Jelena,	@prezime=Maric, @adresa='Nikole Tesle 54', @grad='Beograd'

@@ -360,18 +360,30 @@ UPDATE [dbo].[faktura]
 IF OBJECT_ID('obracun_poena') IS NOT NULL
 	DROP PROCEDURE obracun_poena
 GO
-CREATE PROCEDURE obracun_poena @IDfakture INT
+CREATE PROCEDURE obracun_poena @IDfakture INT = NULL
 AS
+IF (@IDfakture IS NOT NULL)
+BEGIN
+UPDATE dbo.faktura
+SET dbo.faktura.poeni=(SELECT SUM(a.poeni) AS poeni
+					   FROM dbo.faktura f JOIN dbo.artikalUFakturi auf ON auf.idFakture=f.id
+										  JOIN dbo.artikal a ON auf.idArtikla=a.id
+					   WHERE f.id=@IDfakture)
+WHERE dbo.faktura.id=@IDfakture
+END
+ELSE
+BEGIN
 WITH obracunaj_p AS (
 SELECT f.id, SUM(a.poeni) AS poeni
 FROM dbo.faktura f JOIN dbo.artikalUFakturi auf ON auf.idFakture=f.id
 				   JOIN dbo.artikal a ON auf.idArtikla=a.id
-WHERE f.id=@IDfakture
+WHERE f.poeni=0
 GROUP BY f.id
 )
 UPDATE dbo.faktura
-SET dbo.faktura.poeni=(SELECT poeni FROM obracunaj_p)
-WHERE dbo.faktura.id=@IDfakture
+SET dbo.faktura.poeni=(SELECT poeni FROM obracunaj_p WHERE id=dbo.faktura.id)
+WHERE dbo.faktura.poeni=0
+END
 GO
 
 --4. Kao zaposleni u prodaji, prilikom unosenja nove fakture, zelim da mi sistem automatski 
