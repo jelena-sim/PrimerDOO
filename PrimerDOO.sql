@@ -1,10 +1,30 @@
-IF OBJECT_ID('artikalUFakturi') IS NOT NULL DROP TABLE artikalUFakturi
-IF OBJECT_ID('faktura') IS NOT NULL DROP TABLE faktura
-IF OBJECT_ID('klijent') IS NOT NULL DROP TABLE klijent
-IF OBJECT_ID('artikal') IS NOT NULL DROP TABLE artikal
-IF OBJECT_ID('promocija') IS NOT NULL DROP TABLE promocija
-IF OBJECT_ID('zaposleni') IS NOT NULL DROP TABLE zaposleni
-IF OBJECT_ID('popusti') IS NOT NULL DROP TABLE popusti
+IF OBJECT_ID('artikalUFakturi') IS NOT NULL
+	DROP TABLE artikalUFakturi
+GO
+
+IF OBJECT_ID('faktura') IS NOT NULL
+	DROP TABLE faktura
+GO
+
+IF OBJECT_ID('klijent') IS NOT NULL
+	DROP TABLE klijent
+GO
+
+IF OBJECT_ID('artikal') IS NOT NULL
+	DROP TABLE artikal
+GO
+
+IF OBJECT_ID('promocija') IS NOT NULL
+	DROP TABLE promocija
+GO
+
+IF OBJECT_ID('zaposleni') IS NOT NULL
+	DROP TABLE zaposleni
+GO
+
+IF OBJECT_ID('popusti') IS NOT NULL
+	DROP TABLE popusti
+GO
 
 CREATE TABLE klijent
 (
@@ -15,6 +35,7 @@ CREATE TABLE klijent
 	grad NVARCHAR(10),
 	stanje INT
 )
+GO
 
 CREATE TABLE zaposleni
 (
@@ -23,6 +44,7 @@ CREATE TABLE zaposleni
 	prezime NVARCHAR(10),
 	uloga NVARCHAR(30)
 )
+GO
 
 CREATE TABLE promocija
 (
@@ -31,6 +53,7 @@ CREATE TABLE promocija
 	datKraja DATE,
 	bonus INT
 )
+GO
 
 CREATE TABLE popusti
 (
@@ -38,6 +61,7 @@ CREATE TABLE popusti
 	poeni INT,
 	procenat FLOAT
 )
+GO
 
 CREATE TABLE faktura
 (
@@ -56,6 +80,7 @@ CREATE TABLE faktura
 	constraint fkIdZaposlenog foreign key (idZaposlenog) references zaposleni(id),
 	constraint fkIdPromocije foreign key (idPromocije) references promocija(id)
 )
+GO
 
 CREATE TABLE artikal
 (
@@ -64,6 +89,7 @@ CREATE TABLE artikal
 	poeni INT,
 	cena FLOAT
 )
+GO
 
 CREATE TABLE artikalUFakturi
 (
@@ -73,6 +99,7 @@ CREATE TABLE artikalUFakturi
 	constraint fkIdArtikla foreign key (idArtikla) references artikal(id),
 	constraint fkIdFakture foreign key (idFakture) references faktura(id)
 )
+GO
 
 INSERT INTO [dbo].[zaposleni]
            ([id]
@@ -356,6 +383,9 @@ UPDATE [dbo].[faktura]
 
 --3. Kao zaposleni u prodaji, prilikom unosenja nove fakture, zelim da mi sistem obracuna
 --poene po svakom artiklu u fakturi prema definisanim vrednostima za svaki artikal.
+--Kreirana je procedura sa opcionim parametrom: ukoliko se unese ID fakture, izracunava sumu poena 
+--odredjene fakture, a ukoliko se ne unese parametar, izracunava sumu poena svake fakture
+--koja trenutno ima 0 poena.
 
 IF OBJECT_ID('obracun_poena') IS NOT NULL
 	DROP PROCEDURE obracun_poena
